@@ -23,38 +23,6 @@
 
 %%% Scheme
 
-% TOD below, used?
-affect-TieColumn =
-#(define-music-function (offsets)(list?)
-#{
-  \once
-    \override TieColumn.after-line-breaking =
-      #(lambda (grob)
-        (let* ((ties (ly:grob-array->list (ly:grob-object grob 'ties)))
-               (c-ps
-                 (map
-                   (lambda (tie) (ly:grob-property tie 'control-points))
-                   ties)))
-
-      (define (offset-control-points coords offsets)
-       (if (null? offsets)
-           (car c-ps)
-           (map
-             (lambda (x y) (coord-translate x y))
-             coords offsets)))
-
-       (define (help offs pts new-pts)
-         (if (null? offs)
-             (reverse new-pts)
-             (help (cdr offs) (cdr pts)
-               (cons (offset-control-points (car pts) (car offs)) new-pts))))
-
-      (for-each
-         (lambda (tie cpts) (ly:grob-set-property! tie 'control-points cpts))
-         ties
-         (help offsets c-ps '()))))
-#})
-
 beamBreak =
 #(define-music-function (music) (ly:music?)
   #{
@@ -119,6 +87,7 @@ spannerStyleNone = \once \override DynamicTextSpanner.style = #'none
 tieWaitOn = \set tieWaitForNote = ##t
 tieWaitOff = \set tieWaitForNote = ##f
 slashFlag = \once \override Flag.stroke-style = "grace"
+positioningDone = \once \override TieColumn.positioning-done = ##t
 
 %%% Positions and Shapes
 
@@ -154,7 +123,6 @@ slurShapeR = \shape #'(
                         ((0.5 . 0) (0 . 0) (0 . 1) (0 . -1))
                       ) \etc
 slurShapeS = \shape #'((0 . -2.5) (-0.5 . -0.5) (0 . -0.5) (0 . 0)) \etc
-% slurShapeT = \shape #'((-0.5 . 0) (-1.5 . -1) (-1 . -3) (-0.5 . -3.75)) \etc
 slurShapeT = 
   \shape #'((-0.25 . -3) (-0.9 . -2) (-0.5 . -1.25) (-0.5 . -1)) \etc
 slurShapeU = \shape #'(
@@ -162,40 +130,66 @@ slurShapeU = \shape #'(
                         ((0 . 0) (0 . 0) (0 . 0) (0 . 0))
                       ) \etc
 slurShapeV = \shape #'((0 . 0) (0 . 1.5) (0 . 2) (0 . 0)) \etc
+slurShapeW = \shape #'(
+                        ((0 . 3) (0 . 3) (0 . 3) (0 . 3))
+                        ((0 . 5) (0 . 5) (0 . 2) (0 . 0))
+                      ) \etc
+slurShapeX = \shape #'((0 . 0) (0 . 0) (0 . 0) (0 . -0.75)) \etc
+slurShapeY = \shape #'((0 . 0) (0 . 0.5) (0 . 0) (0 . 0)) \etc
+slurShapeZ = \shape #'(
+                        ((0 . 0.4) (0 . 0.25) (0 . 0.25) (0 . 0.4))
+                        ((0 . 0) (0 . 0) (0 . 0) (0 . 0))
+                      ) \etc
+slurShapeAA = \shape #'((0 . 0) (0 . 1) (0 . 1) (0 . 0)) \etc
+slurShapeAB = \shape #'((0 . 0) (0 . 1) (0 . 1) (0 . 0)) \etc
+slurShapeAC = \shape #'((0 . 0) (0 . 0) (0 . 0.5) (0 . 0)) \etc
+slurShapeAD = \shape #'((0 . 0) (0 . 0) (0 . 1.5) (0 . 0)) \etc
+slurShapeAE = \shape #'((0 . 0) (0 . 0.5) (0 . 1) (0 . 0)) \etc
+slurShapeAF = \shape #'((0 . 0) (0 . 0.5) (0 . 1.5) (0 . 0)) \etc
+slurShapeAG = \shape #'((0 . 0) (0 . 0) (0 . 0) (3 . 0)) \etc
+slurShapeAH = \shape #'(
+                         ((0 . 0) (0 . 0) (0 . 0) (0 . 0))
+                         ((0 . 0) (0 . 0) (0 . 0) (0 . 0))
+                         ((0 . 0) (0 . 0) (0 . 0) (3 . 0))
+                       ) \etc
+slurShapeAI = \shape #'((-1.5 . 0.25) (-1 . 0) (0 . 0.75) (0 . 0)) \etc
+slurShapeAJ = \shape #'((0 . -2) (0 . 1) (0 . 0) (0 . 0)) \etc
+slurShapeAK = \shape #'((0 . -0.3) (0 . 0.1) (0 . 0) (0 . 0)) \etc
+slurShapeAL = \shape #'(
+                         ((0 . 0) (0 . 0) (0 . 0) (0 . 0))
+                         ((0.5 . 0) (0 . 0) (0 . 0) (0 . 0))
+                       ) \etc
+slurShapeAM = \shape #'(
+                         ((-1 . 4.25) (-1 . 4.25) (0 . 4.25) (0 . 4.25))
+                         ((0.25 . 0) (0.25 . 0) (0 . 0) (0 . 0))
+                       ) \etc
 
 tieShapeA = \shape #'((0 . 0) (0 . 0) (1 . 0) (1 . 0)) \etc
-tieShapeB = \shape #'((0 . 0) (0 . 0) (0 . -1) (0 . 0)) \etc
-tieShapeC = \shape #'((0 . 0) (0 . 0) (-2 . 0) (-2 . 0)) \etc
-
-% TODO below, used?
-tieColumnA =
-  \affect-TieColumn #'(
-                        ((0 . 0) (0 . 0) (0 . -1) (0 . 0))  ;; bottom
-                        ((0 . 0) (0 . 0) (-1 . 0) (-1 . 0)) ;; top
-                      )
-  
-tieColumnB =
-  \affect-TieColumn #'(
-                        ((0 . 0) (0 . 0) (0 . 0) (0 . 0))  ;; bottom
-                        ((1 . 0) (1 . 0) (0 . -1) (0 . -1))  ;; middle
-                        ((0 . 0) (0 . 0) (0 . 0) (0 . 0)) ;; top
-                      )
-  
-hShiftA = \once \override NoteColumn.force-hshift = 0
-hShiftB = \once \override NoteColumn.force-hshift = -0.25
+tieShapeB = \shape #'((0 . 0) (0 . -0.25) (0 . -1) (0 . 0)) \etc
+tieShapeC = \shape #'((0.25 . -0.5) (0 . -0.5) (0 . -0.5) (-0.25 . -0.5)) \etc
+tieShapeD = 
+  \shape #'((0.5 . 1.25) (0.5 . 1.25) (-1.5 . 1.75) (-1.5 . 1.75)) \etc
+tieShapeE = \shape #'((0.5 . 0.75) (0.5 . 0.9) (-2 . 0.9) (-2 . 0.75)) \etc
 
 rotateHairpinA = \once \override Hairpin.rotation = #'(10 -1 0)
 rotateHairpinB = \once \override Hairpin.rotation = #'(15 -1 0)
+
 moveHairpinA = \tweak Y-offset 4 \etc
 moveHairpinB = \tweak Y-offset 2.5 \etc
+moveHairpinC = \tweak Y-offset 3 \etc
+moveHairpinD = \tweak Y-offset 3 \etc
 moveAccentA = \offset Y-offset -0.5 \etc
 moveTrillA = \tweak Y-offset 5 \etc
 moveTrillB = \tweak Y-offset 6 \etc
 moveNoteA = \once \override NoteColumn.force-hshift = -0.5
 moveNoteB = \once \override NoteColumn.force-hshift = 1.5
 moveNoteC = \once \override NoteColumn.X-offset = 0.75
+moveNoteD = \once \override NoteColumn.force-hshift = -0.5
+moveNoteE = \once \override NoteColumn.force-hshift = 0
+moveNoteF = \once \override NoteColumn.force-hshift = -0.25
 moveClefA = \once \override Staff.Clef.extra-offset = #'(0.5 . 0)
 moveDotA = \tweak Dots.extra-offset #'(0 . 1) \etc
+moveOttavaA = \once \override Staff.OttavaBracket.extra-offset = #'(0 . 1)
 
 %%% Markup
 
@@ -277,8 +271,8 @@ rightHandUpper = \relative {
     es } \afterGrace 15/16 ds4.-\trillSpanUnderSlur \startTrillSpan { 
     es16\stopTrillSpan ds } |
   \oneVoice <es, as css>8-.) r <es as>^(  <fs ds'>16 <ds b'> <fs ds'>
-    <cs! as'> <fs ds'> <b, gs'>  <as as'>8-.) r <es' as>^\(  <fs ds'>16
-    <ds b'> <fs ds'> <cs as'> <fs ds'> <b, gs'> |
+    <cs! as'> <fs ds'> <b, gs'>  <as as'>8-.) r <es' as>-\slurShapeAL ^\(
+    <fs ds'>16 <ds b'> <fs ds'> <cs as'> <fs ds'> <b, gs'> |
   \acciaccatura { as8*1/4 } \afterGrace 5/6 as'2.-\trillSpanUnderSlur 
     -\moveTrillA \startTrillSpan { <b\=1 -\slurShapeA ( ds\=2 -\slurShapeB ^(>8
     \stopTrillSpan } \stemUp <as\=1) css\=2)>2.-\trillSpanUnderSlur
@@ -298,8 +292,9 @@ rightHandUpper = \relative {
     <gss, bs>  <b ds>8 <as cs> <cs, gs'>  <fs as>4. |
   \acciaccatura { <e as>8 } gs'8-.) r r <as, e' gs>4.~( q8 <as ds fs>
     <gs as e'>  <fs b ds>16 <e fs cs'> <ds fs b>8) r |
-  \acciaccatura { <fs bs>8 } as'8-. r r <bs, fs' as>4.~(  q8 <bs es! gs>
-    <as bs fs'>  \stemDown <gs cs es>16 <fs gs ds'> <es gs cs>8) <gs cs es>\( |
+  \acciaccatura { <fs bs>8 } as'8-. r r <bs, fs' as>4.~-\slurShapeAK (  q8 
+    <bs es! gs> <as bs fs'>  \stemDown <gs cs es>16 <fs gs ds'> <es gs cs>8)
+    <gs cs es>\( |
   \slashedGrace { <gs es'>8~ } <es' b'!>4.->  \tieDown \slashedGrace 
     { <gs, e'>8~ } <e' b'>4.->  \slashedGrace { <gs, ds'>8~^( } <ds' b'>)
     \slashedGrace { <e\=1 -\slurShapeA ( cs'\=2^(> } <ds\=1) b'\=2)>8.
@@ -373,7 +368,7 @@ rightHandUpper = \relative {
     <e! e'!>4 <fs fs'>8 |
   <d d'>2. \subdivideEighths \oneVoice bs16[ d a' bs \tuplet 3/2 { d a' a] }
     \subdivideOff a'8-.) r <bs,,, fs' bs>8^( |
-  <cs es cs'>8 gs' cs,)  \voiceOne \hShiftB cs'4.~(  cs8 b! cs  <d, e b' d>
+  <cs es cs'>8 gs' cs,)  \voiceOne \moveNoteF cs'4.~(  cs8 b! cs  <d, e b' d>
     <gs e' gs> <fs d' fs>) |
   \oneVoice <e cs' e>4(^\pocoPiuMosso <ds bs' ds>8  <d b' d>4 <gs bs>8
     <cs, a' cs>4) <e cs' e>8(  <a cs a'>4 <gs e' gs>8 |
@@ -393,10 +388,11 @@ rightHandUpper = \relative {
     \stemDown <e cs' e>8(  <a cs a'>4 <gs e' gs>8 |
   <gs e' gs>8 <fs d' fs> <e cs' e>  <fs d' fs>4 \stemNeutral <gs b>8
     <cs, a' cs>4.) \strictGraceOn \grace { e16^( <cs' e> e_~ } \strictGraceOff
-    <e cs' e>4.)~( |
+    <e_~ cs'-\tieShapeC ^~ e^~>4.)( \positioningDone |
   q8 <ds bs' ds>8. <d b' d>16  q8 <cs a' cs> <bs gs' bs>  <cs e' cs>
-    <e cs' e>8. <a cs a'>16  q8-.) r e,^( |
-  \afterGrace 15/16 e1.\startTrillSpan { ds16\stopTrillSpan e gs g } |
+    <e cs' e>8. <a cs a'>16  q8-.) r e, -\slurShapeW ^( |
+  \afterGrace 15/16 e1.-\trillSpanUnderSlur \startTrillSpan { ds16
+    \stopTrillSpan e gs g } |
   \voiceOne fs2.)~(^\>  fs4\! f8~  f^\< \acciaccatura { \once \slurDown g }
     f e\! |
     
@@ -420,7 +416,7 @@ rightHandUpper = \relative {
   \grace { bs16[^( cs] } \slashedGrace { ds8 } cs4.~\startTrillSpan 
     cs8\stopTrillSpan bs16 cs es ds  bs cs es, fs bs, cs  es fs bs cs es ds |
   bs cs fs, fss bs, cs  fs fss bs cs es ds  bs32-> cs es ds
-    \grace { bs16*1/16[ cs] } \slashedGrace { ds8*1/16 } cs4~\startTrillSpan
+    \grace { bs16*1/16[ cs] } \slashedGrace { ds } cs4~\startTrillSpan
     \voiceOne cs4.*2/3 \hideNoteHead gs8)\stopTrillSpan |
   \bar "||"
   \key fs \major
@@ -436,8 +432,8 @@ rightHandUpper = \relative {
     <gs as e'>  <fs b ds>16 <e fs cs'> <ds fs b>8) r |
     
   \barNumberCheck 89
-  <fs bs as'>8-.\arpeggio r r  <bs fs' as>4.->~(  q8 <bs es! gs> <as bs fs'>
-    \stemDown <gs cs es>16 <fs gs ds'> <es! gs cs>8) <gs cs es>( |
+  <fs bs as'>8-.\arpeggio r r  <bs fs' as>4.->~ -\slurShapeY (  q8 <bs es! gs>
+    <as bs fs'>  \stemDown <gs cs es>16 <fs gs ds'> <es! gs cs>8) <gs cs es>( |
   \stemNeutral <gs es' b'>4.->)\arpeggio <gs e' b'>->\arpeggio
     <gs ds' b'>8->\(\arpeggio \slashedGrace { <e'\=1 -\slurShapeA ( cs'\=2^(> }
     <ds\=1) b'\=2)>8. <cs as'>16\) <cs ds as'>8\( \slashedGrace { 
@@ -451,11 +447,11 @@ rightHandUpper = \relative {
   <fs as fs'>8-.) r <bs, gss' bs>8(  <b gs' b>4 <gs es' gs>8  <as fs' as>4)
     <cs as' cs>8(  <fs as fs'>4 <es cs' es>8 |
   <ds b' ds>8 <cs as' cs> <b gs' b>  <ds b' ds>4 <gs, es' gs>8  <as fs' as>4.)
-    <cs fss cs'>4.->~( |
+    <cs fss cs'>4.->~-\slurShapeZ ( |
   <cs cs'>8 <bs bs'>8. <b b'>16  <b gs' b>8 <as fs' as> <gss es' gss> 
     <as fs' as> <cs as' cs> <fs as fs'>  q4 <es cs' es>8) |
   q8( <ds b' ds> <cs as' cs>  <ds b' ds>4 <gs, es' gs>8  <as fs' as>4.)
-    <as dss as'>->~( |
+    <as dss as'>->~ -\slurShapeZ ( |
     
   \barNumberCheck 97
   <as as'>8 <gss gss'> <cs cs'>~  <cs es cs'>4 <bs ds bs'>8  <as cs as'> 
@@ -465,7 +461,7 @@ rightHandUpper = \relative {
   <ds b' ds>8 <cs as' cs> <bs gss' bs>  <b gs' b>4 <gs es' gs>8  <as fs' as>4)
     <cs as' cs>8( <fs as fs'>4 <es cs' es>8 |
   q8 <ds b' ds> <cs as' cs>  <ds b' ds>4 <gs, es' gs>8  <as fs' as>4.)
-    <cs fss cs'>4.->~( |
+    <cs fss cs'>4.->~ -\slurShapeZ ( |
   <cs cs'>8 <bs bs'>8. <b b'>16  <b g' b>8 <bf d bf'> <a fs' a>)  <as fs' as>(
     <cs fs cs'> <fs as fs'>  q) r gs,!^(
   % gs2.\startTrillSpan \slashedGrace { fss8\stopTrillSpan } <bs, fs' gs>-.)
@@ -474,34 +470,40 @@ rightHandUpper = \relative {
     <bs, fs' gs>-.) <fs' bs es>( <fs bs fs'>  <gs b ds fs gs>[ <ds' fs ds'>]
     <es, b' cs es> |
   <fs as fs'>4.) 
-    << { \voiceOne fs'4.->( } \new Voice { \voiceThree as,8 b bs } >>
+    << 
+      { \voiceOne fs'4.-> -\slurShapeAA ( } 
+      \new Voice { \voiceThree as,8 b bs } 
+    >>
     <cs fs>-> <cs es>8. cs16  <gs cs>4.*2/3 s16 \hideNoteHead cs,) |
-  << { e'4.->( e-> } \new Voice { \voiceThree gs,8 as b!  as ds cs } >>
+  << 
+    { e'4.-> -\slurShapeAB ( e-> } 
+    \new Voice { \voiceThree gs,8 as b!  as ds cs } 
+  >>
     <cs e>-> <b ds>8. b16  <fs b>4.*2/3 s16 \hideNoteHead b,) |
   
   \barNumberCheck 105
   <g' d'>4.->(\arpeggio <b d>-. \oneVoice <d, b' d>8-> <cs as'> <b b'>
     <b g'> <a fs'> <g es'!> |
   \slashedGrace { fs8 } \afterGrace 15/16 fs'4.)^\(^\trillSharp\startTrillSpan
-     { es16[(\stopTrillSpan fs]) fss[( gs] \slashFlag as!8 } \afterGrace 7/8 
+    { es16[(\stopTrillSpan fs]) fss[( gs] \slashFlag as!8 } \afterGrace 7/8 
     gs4.)\startTrillSpan { fss16(\stopTrillSpan gs) } \afterGrace 7/8 a4.
     ^\trillNatural\startTrillSpan { gs16(\stopTrillSpan a) } \afterGrace 7/8
     <es as>4.^\trillSharp\startTrillSpan { gss16(\stopTrillSpan as)\) } |
-  \voiceOne gs'8->( s4 
+  \voiceOne gs'8->-\slurShapeAD ( s4 
     << 
       { \voiceOne gs4.-> } 
       \new Voice { \voiceThree <bs, ds>8 <cs e> <ds fs> } 
     >>
     <ds fs a>-> <e gs>8. e16  <cs e>4.*2/3 s16 \hideNoteHead e,) |
   << 
-    { <e' g>4.->( q-> } 
+    { <e' g>4.->-\slurShapeAE ( q-> } 
     \new Voice { \voiceThree b!8 <as! cs> <b d>  bf <a c> <as cs> } 
-  >> <d g> <d fs>8. d16  <b d>4.*2/3 s16 \hideNoteHead d,) |
-  <as' es'!>4.->(\arpeggio <gs! es'>  <d es b'>8-> <cs a'>8. <b g'>16  q8 
-    <a fs'> <g es'>) |
-  \subdivideEighths <g es'>16*1/2[( \magnifyMusic #2/3 {
-    as c b  cs e d e  fss es as c  b cs e d  e fss es as  c b \ottava 1 cs e
-    d e fss es  as c b cs  e d b g  es! d! b g  \ottava 0 es! d! b g
+  >> <d g>-> <d fs>8. d16  <b d>4.*2/3 s16 \hideNoteHead d,) |
+  <as' es'!>4.->-\slurShapeAF (\arpeggio <gs! es'>  <d es b'>8-> <cs a'>8.
+    <b g'>16  q8 <a fs'> <g es'>) |
+  \subdivideEighths <g es'>16*1/2[-\slurShapeAG ( \magnifyMusic #2/3 {
+    as c b  cs e d e  fss es as c  b cs e d  e fss es as  c b cs e
+    \ottava 1 d e fss es  as c b cs  e d b g  es! d! b g  \ottava 0 es! d! b g
     es! d! b g!]
   }
   \subdivideOff \oneVoice <fs fs'>4)^\calando r8  \stemDown <b' gs'!>16(^\>
@@ -512,12 +514,12 @@ rightHandUpper = \relative {
     <es, cs'>\! |
     
   \barNumberCheck 113
-  <as fs'>4) r8  r16 ds32[(^\leggiero es]  fs[ gs as b]  bs[ cs fs ds] 
-    cs[ ds cs as]  gs[ as gs fs]  ds[ fs ds cs]  b![ ds es fs]  gs[ as bs cs]
-    ds[ es fs b] |
+  <as fs'>4) r8  r16 ds32[-\slurShapeAH (^\leggiero es]  fs[ gs as b]
+    bs[ cs fs ds]  cs[ ds cs as]  gs[ as gs fs]  ds[ fs ds cs]  b![ ds es fs]
+    gs[ as bs cs]  ds[ es fs b] |
   as32[ fs es ds]  fs[ ds cs b]  as[ gs fs as]  b[ cs ds es]  fs[ gs as b]
     bs[ cs fs ds]  cs[ ds cs as]  gs[ as gs fs]  ds[ fs ds cs]  b![ ds fs as]
-    b[ cs ds es]  \ottava 1 fs[ gs as b] |
+    b[ cs ds es]  \moveOttavaA \ottava 1 fs[ gs as b] |
   \omit TupletNumber
   \tuplet 57/12 { \magnifyMusic #2/3 {
     bs8[ cs fs ds  cs b as gs  fs as fs es  ds fs ds \ottava 0 cs b as gs fs
@@ -560,10 +562,10 @@ rightHandLower = \relative {
   
   \barNumberCheck 25
   s2. fs4.(  ds16 e fs e gs fs |
-  \hideNoteHeadOn \grace { ds8) } s4.  \afterGrace 15/16 { ds2.\startTrillSpan
+  \hideNoteHeadOn \grace { ds8) } s4.  \afterGrace 15/16 { ds'2.\startTrillSpan
     ds4.} { css16\stopTrillSpan ds } \hideNoteHeadOff |
   s1. * 4 |
-  cs'8 \slurUp \acciaccatura { ds } cs b  b \acciaccatura { cs } b as 
+  cs8 \slurUp \acciaccatura { ds } cs b  b \acciaccatura { cs } b as 
     \moveNoteA as gs4 <gs ds'> gs8 |
   s1. |
   
@@ -600,7 +602,7 @@ rightHandLower = \relative {
   a8 bs gs  a bs fs  s2. |
   s4. \voiceOne \tieWaitOn
     << 
-      { \hShiftA e4.*1/3-\tieShapeB ~ gs4-\tieShapeC ^~ } % TODO 2nd tie
+      { \moveNoteE e4.*1/3-\tieShapeB _~ gs4^~ \positioningDone }
       \new Voice { \mergeDifferentlyDottedOn \voiceFour e8 gs cs, } 
     >>
     \voiceFour <e gs> \tieWaitOff <d! gs> <d fs>  s4. |
@@ -616,7 +618,7 @@ rightHandLower = \relative {
   <as cs>4-. q8-.  <b d>4-. <a d>8-.  q4-. <gs! d'>8-.  <a d>4-. <b d>8-. |
   <as cs>4 q8  <b d>4 <a d>8  <gs! d'>4 q8  q4 q8 |
   <gs d'>4 <a c>8  q4 q8  q4 <gs c>8  q4 <gs b>8 |
-  <gs b>4 q8(  a4 \clef bass s8 \hideNoteHead es8) s4 s4. |
+  <gs b>4 q8-\slurShapeX (  a4 \clef bass s8 \hideNoteHead es8) s4 s4. |
   s1. * 4 |
   
   \barNumberCheck 81
@@ -632,15 +634,16 @@ rightHandLower = \relative {
   
   \barNumberCheck 89
   s1. * 2 |
-  cs'8( \acciaccatura { ds } cs b)  b( \acciaccatura { cs } b as)  as8 gs4
-    s4. |
+  cs'8( \acciaccatura { ds } cs b)  b( \acciaccatura { cs } b as)  \moveNoteD
+    as8 gs4 s4. |
   s1. * 3 |
   \voiceThree gs'4. s s2. |
   s1. |
   
   \barNumberCheck 97
   ds!4. s s2. |
-  <fs gs>4._~  \hideNoteHead q8 s4  s2. |
+  <fs-\tieShapeE _~ gs-\tieShapeD _~>4. \positioningDone \hideNoteHead q8 
+    s4 s2. |
   s1. |
   s2. s4. \hideNoteHead fss4.~ |
   fss4. s s2. |
@@ -651,7 +654,7 @@ rightHandLower = \relative {
   \barNumberCheck 105
   b8(\arpeggio cs d  d g b,) s2. |
   s1. |
-  <ds gs bs gs'>8-> ds' gs,  gs4.  <a bs>4 <gs cs>8  a gs8. e16 |
+  <ds gs bs gs'>8->\arpeggio ds' gs,  gs4.  <a bs>4 <gs cs>8  a gs8. e16 |
   g4. g <g as>4 <fs as>8  g fs8. d16 |
   d8(\arpeggio e es  es e ds)  s2. |
 }
@@ -761,7 +764,7 @@ leftHandLower = \relative {
     <as, es' cs'!>8)\arpeggio r q(\arpeggio <as ds fs cs'>4 <as ds fs b!>8 |
   <as, as'>8-.) r s \voiceTwo <fs'' as>4 q8  s4.  <ds fs>4 q8 |
   s8 \oneVoice r <gs css>[(  <fs ds'>]) r as,,~[^( <as as'>-.]) r 
-    <es'' cs'!>[(  <ds b'>]) r as,~^( |
+    <es'' cs'!>[(  <ds b'>]) r as,~-\slurShapeAM ^( |
   <as as'>-.) r <css' es as css>8[( q]) r <as, as'>-.[ q-.] r <es'' as es'>[(
     q]) r <gs,,  gs'>-. |
   <fs fs'>8-.\noBeam \stemDown cs''( gs'  fs16 gs as8 cs,)  fs,( cs' gs'
@@ -769,8 +772,8 @@ leftHandLower = \relative {
     
   \barNumberCheck 25
   fs,,8( cs' gs'  fs16 gs as8 cs,)  fs,( cs' gs'  fs16 gs as8 cs) |
-  \grace { s8 } \stemNeutral fs,,,8(\noBeam fs'' cs'  b16 cs ds8 fs,)
-    fs,( fs' cs' b16 cs ds8 fs) |
+  \grace { s8 } \stemNeutral fs,,,8-\slurShapeAI (\noBeam fs'' cs'  b16 cs ds8
+    fs,)  fs,-\slurShapeAJ ( fs' cs'  b16 cs ds8 fs) |
   fs,,8( fs' cs'  b16 cs ds8 fs,)  \stemDown fs,( cs' gs'  fs16 gs as8 cs,) |
   \grace { s8 } \stemNeutral fs,,8\noBeam cs''( gs'  fs16 gs as8 cs,)
     fs,( cs' <fs cs'>)  b,,( fs' fs') |
@@ -911,8 +914,8 @@ leftHandLower = \relative {
     
   \barNumberCheck 105
   <fs, fs'>8( d'' <g b>  q d fs,)  <fs, fs'>( d'' <g d'>  q d b') |
-  <fs,, fs'>8( cs'' as'!  <ds, bs'> gs fs,)  <css' bs'>( fs <css bs'>)
-    <cs cs'!>( <es as> <cs cs'>) |
+  <fs,, fs'>8-\slurShapeAC ( cs'' as'!  <ds, bs'> gs fs,)  <css' bs'>( fs 
+    <css bs'>)  <cs cs'!>( <es as> <cs cs'>) |
   <fs,, fs'>8( ds'' <gs bs ds>  q ds fs,)  <fs, fs'>( e'' <gs cs e>  q e 
     fs,) |
   <fs, fs'>8( e'' <g b e>  <g c e> e fs,)  <fs, fs'>( d'' <fs as! d>  <fs b d>
@@ -923,8 +926,8 @@ leftHandLower = \relative {
   \clef bass \stemDown \rotateHairpinB fs,,,8(\< cs'' cs'  \grace { bs16 ds! }
     cs4-\moveHairpinA \> \once \stemUp cs,8)\!  \rotateHairpinA fs,(\< cs' cs'
     \grace { bs16 ds } cs4-\moveHairpinB \> \once \stemUp cs,8)\! |
-  \rotateHairpinB fs,,8(\< cs'' as'  b!4-\moveHairpinA \> cs,8)\!
-    \rotateHairpinB fs,(\< cs' as'  b4-\moveHairpinB \> cs,8)\! |
+  \rotateHairpinB fs,,8(\< cs'' as'  b!4-\moveHairpinC \> cs,8)\!
+    \rotateHairpinB fs,(\< cs' as'  b4-\moveHairpinD \> cs,8)\! |
     
   \barNumberCheck 113
   \stemNeutral <fs,, fs'>8 r <cs'' fs as>(  <ds fs b>4 <cs fs as>8
@@ -1000,7 +1003,8 @@ dynamics = {
   
   \barNumberCheck 41
   s1. * 2 |
-  \rotateHairpinA s4\< s16 s\!  s8 s4^\sempreP s2. |
+  \rotateHairpinA s4\< s16 s\!  s8 \tag layout { s4^\sempreP } 
+    \tag midi { s4\p } s2. |
   s1. * 3 |
   \rotateHairpinA s4\< s16 s\!  s4. s2. |
   s1. |
@@ -1102,7 +1106,9 @@ pedal = {
   
   \barNumberCheck 9
   s4 s8\su  s4 s8\sd  s4 s8\su s4. |
-  s4\sd s8\su  s4 s8\sd  s4 s8\su  s4 s8\sd |
+  \tag layout { \grace { s8 } s4\sd }
+  \tag midi   { \grace { s8\sd } s4 }
+    s8\su  s4 s8\sd  s4 s8\su  s4 s8\sd |
   s4 s8\su  s4 s8\sd  s4 s8\su  s4\sd s8\su |
   s4\sd s8\su  s4\sd s8\su  s4\sd s8\su  s4\sd s8\su |
   s4\sd s8\su  s4\sd s8\su  s4\sd s8\su  s4\sd s8\su |
@@ -1116,14 +1122,15 @@ pedal = {
   s4\sd s8\su  s4\sd s8\su  s4\sd s8\su  s4\sd s8\su |
   s4\sd s8\su  s4.  s4\sd s8\su  s8\sd s4\su |
   s4-\tweak Y-offset -2 \sd s8\su  s4.  s4\sd s8\su  s4\sd s8\su |
-  s4.-\tweak Y-offset -2 \sd  s8\su s4  s8-\tweak Y-offset -2 \sd s4
-    s8\su s4 |
+  s4.-\tweak Y-offset -2 \sd  s8\su s4  s8-\tweak Y-offset -2 \sd s4 s8\su s4 |
   s2.-\tweak Y-offset -1 \sd s4. s8 s4\su |
   s4-\tweak Y-offset -1 \sd s8\su  s4 s8\sd  s4 s8\su  s4 s8\sd |
   
   \barNumberCheck 25
   s8. s\su  s4 s8\sd  s8 s4\su  s4. |
-  s4-\tweak Y-offset -1 \sd s8\su  s4 s8\sd  s4 s8\su  s4 s8\sd |
+  \tag layout { \grace { s8 } s4-\tweak Y-offset -1 \sd }
+  \tag midi   { \grace { s8\sd } s4 }
+    s8\su  s4 s8\sd  s4 s8\su  s4 s8\sd | 
   s4 s8\su  s4 s8\sd  s4 s8\su  s4 s8\sd |
   s4 s8\su  s4 s8\sd  s4.  s4\su\sd s8\su |
   s4\sd s8\su  s4 s8\sd  s4.  s4\su\sd s8\su |
@@ -1176,18 +1183,18 @@ pedal = {
   s4.-\tweak Y-offset -0.5 \sd s4 s8\su  s4\sd s8\su  s4\sd s8\su |
   s4.\sd s4 s8\su  s4.\sd s4 s8\su |
   s4.\sd s4 s8\su  s4.\sd s4 s8\su |
-  s4.\sd s4 s8\su  s2.\sd |
+  s4.\sd s4 s8\su  s2.-\tweak Y-offset -1 \sd |
   s1.\su |
   s1. |
   
   \barNumberCheck 73
-  s8\sd s4\su  s4.  s8\sd s4\su  s4. |
-  s8\sd s4\su  s4.  s2.\sd |
+  s8-\tweak Y-offset -2 \sd s4\su  s4.  s8\sd s4\su  s4. |
+  s8-\tweak Y-offset -2 \sd s4\su  s4.  s2.\sd |
   s2.\su  s4 s8\sd s4.\su |
-  s2. s4\sd s8\su s4. |
+  s2. s4-\tweak Y-offset -1 \sd s8\su s4. |
   s1. |
-  s2.\sd s4. s\su |
-  s2.\sd  s4 s8\su  s4. |
+  s2.-\tweak Y-offset -2 \sd s4. s\su |
+  s2.-\tweak Y-offset -2 \sd  s4 s8\su  s4. |
   s2.\sd s4. s4 s16 s\su |
   
   \barNumberCheck 81
@@ -1202,11 +1209,11 @@ pedal = {
   s4\sd s8\su s4.  s4\sd s8\su  s4\sd s8\su |
   
   \barNumberCheck 89
-  s4\sd s8\su s4.  s4\sd s8\su  s4\sd s8\su |
+  s4-\tweak Y-offset -1 \sd s8\su s4.  s4\sd s8\su  s4\sd s8\su |
+  s4-\tweak Y-offset -1 \sd s8\su  s4\sd s8\su  s4\sd s8\su  s4\sd s8\su |
   s4\sd s8\su  s4\sd s8\su  s4\sd s8\su  s4\sd s8\su |
-  s4\sd s8\su  s4\sd s8\su  s4\sd s8\su  s4\sd s8\su |
-  s2.\sd s4. s8. s\su |
-  s8.\sd s\su  s4\sd s8\su  s4.\sd  s4 s8\su |
+  s2.-\tweak Y-offset -2 \sd s4. s8. s\su |
+  s8.-\tweak Y-offset -1 \sd s\su  s4\sd s8\su  s4.\sd  s4 s8\su |
   s4.\sd  s4 s8\su  s4\sd s8\su  s4\sd s8\su |
   s4\sd s8\su  s4\sd s8\su  s4\sd s8\su  s4\sd s8\su |
   s4.\sd  s8. s\su  s4\sd s8\su  s4\sd s8\su |
@@ -1223,25 +1230,26 @@ pedal = {
   
   \barNumberCheck 105
   s4.\sd  s4 s8\su  s4.\sd s\su |
-  s4\sd s8\su  s4\sd s8\su  s4\sd s8\su  s4\sd s8\su |
-  s4\sd s8\su  s4\sd s8\su  s4\sd s8\su  s4\sd s8\su |
+  s4-\tweak Y-offset -2 \sd s8\su  s4\sd s8\su  s4\sd s8\su  s4\sd s8\su |
+  s4-\tweak Y-offset -2 \sd s8\su  s4\sd s8\su  s4-\tweak Y-offset -2 \sd
+    s8\su  s4\sd s8\su |
   s4\sd s8\su  s4\sd s8\su  s4\sd s8\su  s4\sd s8\su |
   s4\sd s8\su  s4\sd s8\su  s4.\sd  s8 s4\su |
   s4\sd s8\su  s2.\sd s4 s16 16\su |
   s4-\tweak Y-offset -2 \sd s8-\tweak Y-offset -1 \su  s4\sd s8\su  
     s4\sd s8\su  s4\sd s8\su |
-  s4\sd s8\su  s4\sd s8\su  s4\sd s8\su  s4\sd s8\su |
+  s4-\tweak Y-offset -1 \sd s8\su  s4\sd s8\su  s4\sd s8\su  s4\sd s8\su |
   
   \barNumberCheck 113
   s4\sd s8\su s4. s2. |
   s1. |
   s2.\sd  s4 s8\su  s4. |
-  s4.\sd s\su s\sd  s4 s8\su |
+  s4.-\tweak Y-offset -1 \sd s\su s-\tweak Y-offset -1 \sd  s4 s8\su |
 }
 
 tempi = {
   \set Score.tempoHideNote = ##t
-  \tempo "Allegretto." 4. = 100 % TODO, fix
+  \tempo "Allegretto." 4. = 60
   s1. * 8  |
 
   \barNumberCheck 9
@@ -1251,11 +1259,12 @@ tempi = {
   s1. * 8  |
   
   \barNumberCheck 25
-  s1. * 8  |
+  s1. * 7  |
+  s2. s4. s8 \tempo 4. = 20 s \tempo 4. = 60 s |
   
   \barNumberCheck 33
   s1. * 2 |
-  s4. \tempo "Poco più mosso." 4. = 92 s s2. |
+  s4. \tempo "Poco più mosso." 4. = 66 s s2. |
   s1. * 5  |
   
   \barNumberCheck 41
@@ -1265,28 +1274,31 @@ tempi = {
   s1. * 8  |
   
   \barNumberCheck 57
-  s1. * 8  |
+  s1. * 5  |
+  \tempo 4. = 72 s1.
+  s1. * 2 |
   
   \barNumberCheck 65
   s1. * 7  |
-  \tempo "Meno mosso." 4. = 80 s1. |
+  \tempo "Meno mosso." 4. = 66 s1. |
   
   \barNumberCheck 73
   s1. * 8 |
   
   \barNumberCheck 81
   s1. * 3 |
-  \tempo "Tempo I." 4. = 100 s1. |
+  \tempo "Tempo I." 4. = 60 s1. |
   s1. * 4 |
   
   \barNumberCheck 89
-  s1. * 4 |
-  \tempo "Più mosso." 4. = 110 s1. |
+  s1. * 3 |
+  s2. s4. s8 \tempo 4. = 20 s \tempo 4. = 60 s |
+  \tempo "Più mosso." 4. = 66 s1. |
   s1. * 3 |
   
   \barNumberCheck 97
   s1. * 6 |
-  \tempo "Tempo I." 4. = 100 s1. |
+  \tempo "Tempo I." 4. = 60 s1. |
 }
 
 %%% Output
@@ -1320,7 +1332,7 @@ tempi = {
 \layout {
   \context {
     \Score
-    % \omit BarNumber % <-- TODO uncomment
+    \omit BarNumber
     \override Slur.details.free-head-distance = 0.5
   }
   \context {
